@@ -1,0 +1,27 @@
+server:
+  port: 9000
+
+spring:
+  batch:
+    jdbc:
+      initialize-schema: always
+  h2:
+    console:
+      enabled: true
+      path: /test_db
+    datasource:
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:~/Users/UOS/test_db;AUTO_SERVER=TRUE
+      username: sa
+      password:
+      hikari:
+        driver-class-name: org.h2.Driver
+        jdbc-url: jdbc:h2:~/Users/UOS/test_db;AUTO_SERVER=TRUE
+        username: sa
+        password:
+        minimumIdle: 5
+        maximumPoolSize: 50
+        idleTimeout: 30000
+        maxLifetime: 1800000
+        connectionTimeout: 30000
+        leak-detection-threshold: 48000
