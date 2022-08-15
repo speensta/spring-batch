@@ -1,5 +1,7 @@
 server:
   port: 9000
+  servlet:
+    register-default-servlet: true
 
 spring:
   batch:
