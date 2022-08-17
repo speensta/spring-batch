@@ -27,6 +27,7 @@ public class BatchJobFlowConfig {
     @Bean
     public Job batchJob() {
         return this.jobBuilderFactory.get("batchJob")
+                .incrementer(new RunIdIncrementer())
                 .start(flowStep1())
                 .on("COMPLETED").to(flowStep3())
                 .from(flowStep1())

@@ -53,7 +53,7 @@ public class BatchJobStepConfig {
 
                     @Override
                     public ExitStatus afterStep(StepExecution stepExecution) {
-                        return null;
+                        return new ExitStatus("SUCCESS22");
                     }
                 })
                 .build();
@@ -81,6 +81,19 @@ public class BatchJobStepConfig {
     @Bean
     public Step step2() {
         return stepBuilderFactory.get("step2")
+                .tasklet(new Tasklet() {
+                    @Override
+                    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                        log.info("************************** step2");
+                        return null;
+                    }
+                })
+                .build();
+    }
+
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
