@@ -15,7 +15,22 @@
     <description>spring-batch</description>
     <properties>
         <java.version>11</java.version>
+        <nexacro.uiadapter.version>1.0.5-SNAPSHOT</nexacro.uiadapter.version>
     </properties>
+
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>tobesoft</id>-->
+<!--            <url>http://mangosteen.tobesoft.co.kr/nexus/#browse/browse:maven-public</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -63,8 +78,78 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.9.1</version>
+            <scope>runtime</scope>
+        </dependency>
 
+
+
+
+
+
+
+<!--        <dependency>-->
+<!--            <groupId>com.nexacro.uiadapter17.spring</groupId>-->
+<!--            <artifactId>uiadapter17-spring-core</artifactId>-->
+<!--            <version>${nexacro.uiadapter.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework</groupId>-->
+<!--                    <artifactId>spring-webmvc</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.slf4j</groupId>-->
+<!--                    <artifactId>slf4j-api</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.nexacro.uiadapter17.spring</groupId>-->
+<!--            <artifactId>uiadapter17-spring-dataaccess</artifactId>-->
+<!--            <version>${nexacro.uiadapter.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework</groupId>-->
+<!--                    <artifactId>spring-webmvc</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.aspectj</groupId>-->
+<!--                    <artifactId>aspectjweaver</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.apache.ibatis</groupId>-->
+<!--                    <artifactId>ibatis-sqlmap</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.mybatis</groupId>-->
+<!--                    <artifactId>mybatis</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.mybatis</groupId>-->
+<!--                    <artifactId>mybatis-spring</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework</groupId>-->
+<!--                    <artifactId>spring-orm</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.nexacro.uiadapter17.spring</groupId>-->
+<!--            <artifactId>uiadapter17-spring-excel</artifactId>-->
+<!--            <version>${nexacro.uiadapter.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework</groupId>-->
+<!--                    <artifactId>spring-webmvc</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+
+    </dependencies>
     <build>
         <plugins>
             <plugin>

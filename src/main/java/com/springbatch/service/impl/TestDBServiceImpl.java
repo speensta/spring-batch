@@ -1,6 +1,7 @@
 package com.springbatch.service.impl;
 
 import com.springbatch.service.TestDBService;
+import com.springbatch.service.impl.mapper.TestDBMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

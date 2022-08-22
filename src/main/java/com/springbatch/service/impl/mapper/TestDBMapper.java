@@ -1,4 +1,4 @@
-package com.springbatch.service.impl;
+package com.springbatch.service.impl.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
