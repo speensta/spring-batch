@@ -9,6 +9,12 @@ import java.util.List;
 public interface NexacroMapper {
 
     List<Member> findByAll();
+
+    void create(Member member);
+
+    void update(Member member);
+
+    void delete(Member member);
 }
 
 

@@ -17,4 +17,19 @@ public class NexacroServiceImpl implements NexacroService {
     public List<Member> findByAll() {
         return nexacroMapper.findByAll();
     }
+
+    @Override
+    public void create(Member member) {
+        nexacroMapper.create(member);
+    }
+
+    @Override
+    public void update(Member member) {
+        nexacroMapper.update(member);
+    }
+
+    @Override
+    public void delete(Member member) {
+        nexacroMapper.delete(member);
+    }
 }
