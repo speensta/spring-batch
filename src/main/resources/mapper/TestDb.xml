@@ -4,4 +4,105 @@
     <select id="mybatisTest" resultType="java.util.HashMap">
         SELECT * FROM ITEM
     </select>
+
+    <select id="findHeaderByAll" parameterType="Map" resultType="itemHeader">
+        select * from item_header where createdt between #{startDt} and #{endDt}
+    </select>
+
+    <select id="findHeaderByAllList" parameterType="Map" resultType="itemHeader" >
+        select * from item_header where createdt between #{startDt} and #{endDt}
+    </select>
+
+    <insert id="createHeader" parameterType="itemHeader">
+        <selectKey keyProperty="seq" resultType="int" order="BEFORE">
+            SELECT NVL(MAX(SEQ), 0)+1 FROM ITEM_HEADER
+        </selectKey>
+            INSERT INTO ITEM_HEADER (
+                                    SEQ,
+                                    PRICE,
+                                    RATE,
+                                    TOTALPRICE,
+                                    ITEMCD,
+                                    CREATEDT,
+                                    CREATEUSER
+                                ) VALUES (
+                                    #{seq},
+                                    #{price},
+                                    #{rate, jdbcType=NUMERIC},
+                                    #{totalprice},
+                                    #{itemcd},
+                                    CURRENT_DATE,
+                                    #{createuser}
+                                )
+    </insert>
+
+    <update id="updateHeader" parameterType="itemHeader">
+        UPDATE ITEM_HEADER SET
+                        <if test="price != null">
+                           PRICE = #{price},
+                        </if>
+                        <if test="rate != null">
+                           RATE = #{rate},
+                        </if>
+                        <if test="totalprice != null">
+                           TOTALPRICE = #{totalprice}
+                        </if>
+        WHERE SEQ = #{seq}
+    </update>
+
+    <delete id="deleteHeader" parameterType="itemHeader">
+        DELETE FROM ITEM_HEADER WHERE SEQ = #{seq}
+    </delete>
+
+
+
+
+    <select id="findDetailByAll" parameterType="Map" resultType="itemDetail" >
+        select * from ITEM_DETAIL where createdt between #{startDt} and #{endDt}
+    </select>
+
+    <select id="findDetailByAllList" parameterType="Map" resultType="itemDetail" >
+        select * from ITEM_DETAIL where createdt between #{startDt} and #{endDt}
+    </select>
+
+    <select id="findDetailBySeq" parameterType="Map" resultType="itemDetail" >
+        select * from ITEM_DETAIL where SEQ = #{seq}
+    </select>
+
+    <insert id="createDetail" parameterType="itemDetail">
+        <selectKey keyProperty="seq" resultType="int" order="BEFORE">
+            SELECT NVL(MAX(SEQ), 0)+1 FROM ITEM_DETAIL
+        </selectKey>
+            INSERT INTO ITEM_DETAIL (
+                                    SEQ,
+                                    ITEMGBN,
+                                    ITEMCD,
+                                    PRICE,
+                                    CREATEDT,
+                                    CREATEUSER
+                                ) VALUES (
+                                    #{seq},
+                                    #{itemgbn},
+                                    #{itemcd},
+                                    #{price},
+                                    CURRENT_DATE,
+                                    #{createuser}
+                                )
+    </insert>
+
+    <update id="updateDetail" parameterType="itemDetail">
+        UPDATE ITEM_DETAIL
+            SET PRICE = #{price}
+        WHERE SEQ = #{seq}
+    </update>
+
+    <delete id="deleteDetail" parameterType="itemDetail">
+        DELETE FROM ITEM_DETAIL WHERE SEQ = #{seq}
+    </delete>
+
+
+    <select id="findByItem" parameterType="Map" resultType="item">
+        SELECT ITEMID, NAME AS REGNAME, PRICE, MODDATE, REGDATE, ISDEL FROM ITEM WHERE ITEMID = #{itemid}
+    </select>
+
 </mapper>

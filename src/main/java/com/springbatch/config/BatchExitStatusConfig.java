@@ -25,20 +25,20 @@ public class BatchExitStatusConfig {
 
     private final long currentMilliseconds = new Date().getTime();
 
-    @Bean
-    public Job batchExitSatusJob() {
-
-        return jobBuilderFactory.get("exitStatusJob"+currentMilliseconds)
-                .incrementer(new RunIdIncrementer())
-                .start(exitStatusStep1())
-                    .on("FAILED")
-                    .to(exitStatusStep2())
-                    .on("PASS")
-                    .stop()
-                .end()
-                .build();
-
-    }
+//    @Bean
+//    public Job batchExitSatusJob() {
+//
+//        return jobBuilderFactory.get("exitStatusJob"+currentMilliseconds)
+//                .incrementer(new RunIdIncrementer())
+//                .start(exitStatusStep1())
+//                    .on("FAILED")
+//                    .to(exitStatusStep2())
+//                    .on("PASS")
+//                    .stop()
+//                .end()
+//                .build();
+//
+//    }
 
     @Bean
     public Step exitStatusStep1() {

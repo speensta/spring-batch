@@ -59,4 +59,11 @@ public class WebApplicationConfig implements WebMvcConfigurer {
 //        converters.add(StringHttpMessageConverter());
 //    }
 
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        long timeout = 5 * 60 * 1000;
+        WebMvcConfigurer.super.configureAsyncSupport(configurer);
+        configurer.setDefaultTimeout(timeout);
+    }
+
 }

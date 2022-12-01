@@ -24,17 +24,17 @@ public class BatchJobFlowConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final long currentMilliseconds = new Date().getTime();
 
-    @Bean
-    public Job batchJob() {
-        return this.jobBuilderFactory.get("batchJob")
-                .incrementer(new RunIdIncrementer())
-                .start(flowStep1())
-                .on("COMPLETED").to(flowStep3())
-                .from(flowStep1())
-                .on("FAILED").to(flowStep2())
-                .end()
-                .build();
-    }
+//    @Bean
+//    public Job batchJob() {
+//        return this.jobBuilderFactory.get("batchJob")
+//                .incrementer(new RunIdIncrementer())
+//                .start(flowStep1())
+//                .on("COMPLETED").to(flowStep3())
+//                .from(flowStep1())
+//                .on("FAILED").to(flowStep2())
+//                .end()
+//                .build();
+//    }
 
     @Bean
     public Step flowStep1() {

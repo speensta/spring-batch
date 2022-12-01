@@ -12,11 +12,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
 
 @Configuration
+@EnableTransactionManagement
 public class DataSourceConfig {
 
     @Bean
@@ -30,9 +32,9 @@ public class DataSourceConfig {
     }
 
     @Bean
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception{
+    public SqlSessionFactory sqlSessionFactory() throws Exception{
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(dataSource);
+        sqlSessionFactory.setDataSource(dataSource());
 
         Resource configLocation = new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml");
         Resource[] mapperLocations = new PathMatchingResourcePatternResolver().getResources("classpath:mapper/**/*.xml");
@@ -45,7 +47,7 @@ public class DataSourceConfig {
     }
 
     @Bean("sqlSession")
-    SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) throws Exception {
+    public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) throws Exception {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 

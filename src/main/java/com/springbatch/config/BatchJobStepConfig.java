@@ -30,14 +30,14 @@ public class BatchJobStepConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final long currentMilliseconds = new Date().getTime();
 
-    @Bean
-    public Job parentJob() {
-        return this.jobBuilderFactory.get("parentJob")
-                .incrementer(new RunIdIncrementer())
-                .start(jobStep())
-                .next(step2())
-                .build();
-    }
+//    @Bean
+//    public Job parentJob() {
+//        return this.jobBuilderFactory.get("parentJob")
+//                .incrementer(new RunIdIncrementer())
+//                .start(jobStep())
+//                .next(step2())
+//                .build();
+//    }
 
     @Bean
     public Step jobStep() {

@@ -4,6 +4,7 @@ import com.springbatch.domain.Item;
 import com.springbatch.domain.ItemDetail;
 import com.springbatch.domain.ItemHeader;
 import com.springbatch.dto.ItemHeaderDTO;
+import com.springbatch.service.ProcessService;
 import com.springbatch.service.TestDBService;
 import com.springbatch.util.JobListener;
 import com.springbatch.util.JobNames;
@@ -49,6 +50,8 @@ public class BatchChunkConfig {
     private final static int chunkSize = 500;
 
     private final TestDBService testDBService;
+
+    private final ProcessService processService;
 
     @Autowired
     private SqlSessionFactory sqlSessionFactory;
@@ -139,6 +142,7 @@ public class BatchChunkConfig {
         parameterMap.put("startDt", "20221001");
         parameterMap.put("endDt", "20221031");
 
+
         return new MyBatisPagingItemReaderBuilder<ItemHeader>()
                 .pageSize(chunkSize)
                 .sqlSessionFactory(sqlSessionFactory)
@@ -170,11 +174,25 @@ public class BatchChunkConfig {
 
 //                Item item = myBatisPagingItemReader.read();
 
-                Item item = sqlSessionFactory.openSession()
-                        .selectOne("com.springbatch.service.impl.mapper.TestDBMapper.findByItem", parameterMap1);
+//                Item item = sqlSessionFactory.openSession()
+//                        .selectOne("com.springbatch.service.impl.mapper.TestDBMapper.findByItem", parameterMap1);
 //                Item item = testDBService.findByItem(parameterMap1);
 
-                log.info("Chunk Item Header Writer============="+item.getPrice());
+
+//                parameterMap1.put("seq", itemHeader.getSeq());
+
+//                ItemDetail itemDetail = sqlSessionFactory.openSession()
+//                        .selectOne("com.springbatch.service.impl.mapper.TestDBMapper.findDetailBySeq", parameterMap1);
+
+//                itemHeader.setPrice(Math.round(item.getPrice() * itemHeader.getRate()));
+//                itemDetail.setPrice(Math.round(item.getPrice() * itemHeader.getRate()));
+//
+//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", itemHeader);
+//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
+
+                  processService.process1Batch(itemHeader);
+
+//                log.info("Chunk Item Header Writer============="+item.getPrice());
 
             }
             
