@@ -3,5 +3,5 @@ package com.springbatch.util;
 
 public enum JobNames {
 
-    chunkJob, exitStatusJob, batchJob, parentJob
+    chunkJob, exitStatusJob, batchJob, parentJob, compositeJob
 }

@@ -1,7 +1,6 @@
 package com.springbatch.config;
 
 import com.springbatch.domain.Item;
-import com.springbatch.domain.ItemDetail;
 import com.springbatch.domain.ItemHeader;
 import com.springbatch.dto.ItemHeaderDTO;
 import com.springbatch.service.ProcessService;
@@ -11,9 +10,7 @@ import com.springbatch.util.JobNames;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.batch.MyBatisCursorItemReader;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
-import org.mybatis.spring.batch.builder.MyBatisCursorItemReaderBuilder;
 import org.mybatis.spring.batch.builder.MyBatisPagingItemReaderBuilder;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -28,9 +25,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.lang.model.type.ArrayType;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public class BatchChunkConfig {
         return stepBuilderFactory.get("stepChunk2")
                 .chunk(chunkSize)
                 .reader(itemDetailReader(null))
-                .writer(itemDetailPriceWriter(null))
+                .writer(itemHeaderPriceWriter(null))
                 .build();
     }
 
@@ -142,6 +141,7 @@ public class BatchChunkConfig {
         parameterMap.put("startDt", "20221001");
         parameterMap.put("endDt", "20221031");
 
+        log.info("========================== chunk batch reader ===========================");
 
         return new MyBatisPagingItemReaderBuilder<ItemHeader>()
                 .pageSize(chunkSize)
@@ -158,7 +158,7 @@ public class BatchChunkConfig {
             log.info("=============start");
             Map parameterMap1 = new HashMap<String, Object>();
 
-            
+
             for(Object header : items) {
                 ItemHeader itemHeader = (ItemHeader) header;
 

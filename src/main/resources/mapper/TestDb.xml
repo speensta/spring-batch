@@ -6,7 +6,7 @@
     </select>
 
     <select id="findHeaderByAll" parameterType="Map" resultType="itemHeader">
-        select * from item_header where createdt between #{startDt} and #{endDt}
+        select * from item_header limit #{_skiprows}, #{_pagesize}
     </select>
 
     <select id="findHeaderByAllList" parameterType="Map" resultType="itemHeader" >

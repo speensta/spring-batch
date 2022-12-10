@@ -1,7 +1,6 @@
 package com.springbatch.controller;
 
 import com.springbatch.util.Account;
-import com.springbatch.util.JobNames;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 import static com.springbatch.util.JobNames.chunkJob;
+import static com.springbatch.util.JobNames.compositeJob;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,7 +38,7 @@ public class BatchController extends Account {
     public String batch2()
             throws JobInstanceAlreadyExistsException, NoSuchJobException, JobParametersInvalidException {
 
-        jobOperator.start(chunkJob.name(), "todate=" + LocalDateTime.now().toString());
+        jobOperator.start(compositeJob.name(), "todate=" + LocalDateTime.now().toString());
 
         return "success";
     }
