@@ -1,6 +1,8 @@
 package com.springbatch.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -42,6 +44,7 @@ public class DataSourceConfig {
         sqlSessionFactory.setTypeAliasesPackage("com.springbatch.domain");
         sqlSessionFactory.setConfigLocation(configLocation);
         sqlSessionFactory.setMapperLocations(mapperLocations);
+
 
         return sqlSessionFactory.getObject();
     }

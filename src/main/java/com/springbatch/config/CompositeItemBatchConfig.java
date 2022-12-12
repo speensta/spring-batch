@@ -12,6 +12,8 @@ import com.springbatch.util.JobListener;
 import com.springbatch.util.JobNames;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
 import org.mybatis.spring.batch.builder.MyBatisPagingItemReaderBuilder;
@@ -184,7 +186,7 @@ public class CompositeItemBatchConfig {
     @Bean
     public ItemProcessor<ItemHeader, ItemHeader> compositeItemProcessor() {
 
-//        sqlSessionFactory.openSession().flushStatements();
+//        sqlSessionFactory.openSession(ExecutorType.BATCH).flushStatements();
         log.info("***************compositeItemProcessor***********" );
         return item -> {
             item.setItemDetail(ItemDetail.builder().price(50000).build());
@@ -208,12 +210,12 @@ public class CompositeItemBatchConfig {
 //            for(T t : items) {
 //                header = (ItemHeader) t;
 //                log.info("=================compositeItemHeaderPriceWriter==================");
-//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
-//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
+//                sqlSessionFactory.openSession(ExecutorType.BATCH).update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
+//                sqlSessionFactory.openSession(ExecutorType.BATCH).update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
 //            }
 
 
-            sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeaderbulk", items);
+            sqlSessionFactory.openSession(ExecutorType.BATCH).update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeaderbulk", items);
 
         };
     }
