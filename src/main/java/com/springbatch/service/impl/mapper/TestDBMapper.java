@@ -22,6 +22,8 @@ public interface TestDBMapper {
 
     void updateHeader(ItemHeader itemHeader);
 
+    void updateHeaderbulk(List<ItemHeader> list);
+
     void deleteHeader(ItemHeader itemHeader);
 
     List<ItemDetail> findDetailByAll(Map<String ,Object> map);

@@ -50,6 +50,18 @@
         WHERE SEQ = #{seq}
     </update>
 
+    <update id="updateHeaderbulk" parameterType="itemHeader" flushCache="true">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            UPDATE ITEM_HEADER
+            <set>
+                PRICE = #{item.itemDetail.price},
+                RATE = #{item.rate},
+                TOTALPRICE = #{item.totalprice}
+            </set>
+            WHERE SEQ = #{item.seq}
+        </foreach>
+    </update>
+
     <delete id="deleteHeader" parameterType="itemHeader">
         DELETE FROM ITEM_HEADER WHERE SEQ = #{seq}
     </delete>

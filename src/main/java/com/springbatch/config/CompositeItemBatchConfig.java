@@ -3,6 +3,7 @@ package com.springbatch.config;
 import com.springbatch.config.composite.CompositeItemWriterDelegate;
 import com.springbatch.config.composite.CompositeWriterFirst;
 import com.springbatch.config.composite.CompositeWriterSecond;
+import com.springbatch.domain.ItemDetail;
 import com.springbatch.domain.ItemHeader;
 import com.springbatch.dto.ItemHeaderDTO;
 import com.springbatch.service.ProcessService;
@@ -54,7 +55,7 @@ public class CompositeItemBatchConfig {
 
     private final static int CHUNKSIZE = 1000;
 
-    private static final int POOLSIZE = 8;
+    private static final int POOLSIZE = 2;
 
     private final TestDBService testDBService;
 
@@ -96,10 +97,10 @@ public class CompositeItemBatchConfig {
         log.info("***************stepChunkComposite1*********** {} ", todate);
 
         return stepBuilderFactory.get("stepChunkComposite1")
-                .chunk(CHUNKSIZE)
+                .<ItemHeader, ItemHeader>chunk(CHUNKSIZE)
                 .reader(compositeItemHeaderReader(null))
                 .processor(compositeItemProcessor())
-                .writer(compositeItemHeaderPriceWriter(null))
+                .writer(itemWriterDelegate())
                 .taskExecutor(this.executor())
                 .throttleLimit(POOLSIZE)
                 .build();
@@ -115,7 +116,7 @@ public class CompositeItemBatchConfig {
         return stepBuilderFactory.get("stepChunkComposite2")
                 .chunk(CHUNKSIZE)
                 .reader(compositeItemDetailReader(null))
-                .writer(compositeItemHeaderPriceWriter(null))
+                .writer(itemWriterDelegate())
                 .build();
     }
 
@@ -180,46 +181,46 @@ public class CompositeItemBatchConfig {
                 .build();
     }
 
-
     @Bean
-    public ItemProcessor<? super Object,?> compositeItemProcessor() {
+    public ItemProcessor<ItemHeader, ItemHeader> compositeItemProcessor() {
 
 //        sqlSessionFactory.openSession().flushStatements();
         log.info("***************compositeItemProcessor***********" );
-        return items -> {
-
-            return items;
+        return item -> {
+            item.setItemDetail(ItemDetail.builder().price(50000).build());
+            return item;
         };
 
     }
-
-
-//    @Bean
-//    public ItemWriter<? super Object> itemWriterFirst() {
-//        return items -> {
-//            log.info("============================== itemWriterFirst =================================");
-//        };
-//    }
-//
-//    @Bean
-//    public ItemWriter<? super Object> itemWriterSecond() {
-//        return items -> {
-//            log.info("============================== itemWriterSecond =================================");
-//        };
-//    }
 
     @Bean
     public CompositeItemWriterDelegate<? super Object> itemWriterDelegate() throws Exception {
         log.info("=================itemWriterDelegate==================");
         CompositeItemWriterDelegate compositeItemWriter = new CompositeItemWriterDelegate();
-        compositeItemWriter.setDelegates(Arrays.asList(compositeItemHeaderPriceWriter(null)));
+        compositeItemWriter.setDelegates(Arrays.asList(ItemHeaderPriceWriter()));
         return compositeItemWriter;
     }
 
-    @Bean
-    public <T> FlatFileItemWriter<? extends T> fileFlatItemWriter() {
+    public ItemWriter<ItemHeader> ItemHeaderPriceWriter() throws Exception {
+
+        return items -> {
+//            ItemHeader header = null;
+//            for(T t : items) {
+//                header = (ItemHeader) t;
+//                log.info("=================compositeItemHeaderPriceWriter==================");
+//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
+//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
+//            }
+
+
+            sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeaderbulk", items);
+
+        };
+    }
+
+    public <T> ItemWriter<? extends T> fileFlatItemWriter() {
         BeanWrapperFieldExtractor<T> fieldExtractor = new BeanWrapperFieldExtractor<>();
-        fieldExtractor.setNames(new String[] {"seq", "price", "totprice", "rate"});
+        fieldExtractor.setNames(new String[] {"seq", "price", "totalprice", "rate"});
         fieldExtractor.afterPropertiesSet();
         DelimitedLineAggregator<T> lineAggregator = new DelimitedLineAggregator<>();
         lineAggregator.setDelimiter(",");
@@ -233,42 +234,6 @@ public class CompositeItemBatchConfig {
                 .lineAggregator(lineAggregator)
                 .build();
 
-    }
-
-
-    @Bean
-    @StepScope
-    public FlatFileItemWriter<? super Object> compositeItemHeaderPriceWriter(@Value("#{jobParameters['todate']}") String todate) throws Exception {
-
-        BeanWrapperFieldExtractor<ItemHeader> fieldExtractor = new BeanWrapperFieldExtractor<>();
-        fieldExtractor.setNames(new String[] {"seq", "price", "totprice", "rate"});
-        fieldExtractor.afterPropertiesSet();
-        DelimitedLineAggregator<ItemHeader> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(",");
-        lineAggregator.setFieldExtractor(fieldExtractor);
-
-        FlatFileItemWriter flatFileItemWriter = new FlatFileItemWriterBuilder<ItemHeader>()
-                .name("itemFileWriter")
-                .append(true)
-                .encoding("UTF-8")
-                .resource(new FileSystemResource("/exportSample/export.txt"))
-                .lineAggregator(lineAggregator)
-                .build();
-
-        flatFileItemWriter.afterPropertiesSet();
-
-        return flatFileItemWriter;
-
-//        return items -> {
-//
-//            for(Object header : items) {
-//                log.info("=================compositeItemHeaderPriceWriter==================");
-//                ItemHeader itemHeader = (ItemHeader) header;
-//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
-////                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
-//            }
-//
-//        };
     }
 
 

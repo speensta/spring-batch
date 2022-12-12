@@ -17,4 +17,6 @@ public class ItemHeader {
     private String itemcd ;
     private String createuser;
     private String updateuser;
+
+    private ItemDetail itemDetail;
 }
