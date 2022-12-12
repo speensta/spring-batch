@@ -23,10 +23,15 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -47,9 +52,9 @@ public class CompositeItemBatchConfig {
 
     private final DataSource dataSource;
 
-    private final static int CHUNKSIZE = 10;
+    private final static int CHUNKSIZE = 1000;
 
-    private static final int POOLSIZE = 2;
+    private static final int POOLSIZE = 8;
 
     private final TestDBService testDBService;
 
@@ -75,7 +80,7 @@ public class CompositeItemBatchConfig {
 
 
     @Bean
-    public Job compositeJob() {
+    public Job compositeJob() throws Exception {
         return jobBuilderFactory.get(JobNames.compositeJob.name())
                 .incrementer(new RunIdIncrementer())
                 .start(stepChunkComposite1(null))
@@ -86,7 +91,7 @@ public class CompositeItemBatchConfig {
 
     @Bean
     @JobScope
-    public Step stepChunkComposite1(@Value("#{jobParameters['todate']}") String todate) {
+    public Step stepChunkComposite1(@Value("#{jobParameters['todate']}") String todate) throws Exception {
 
         log.info("***************stepChunkComposite1*********** {} ", todate);
 
@@ -94,7 +99,7 @@ public class CompositeItemBatchConfig {
                 .chunk(CHUNKSIZE)
                 .reader(compositeItemHeaderReader(null))
                 .processor(compositeItemProcessor())
-                .writer(itemWriterDelegate())
+                .writer(compositeItemHeaderPriceWriter(null))
                 .taskExecutor(this.executor())
                 .throttleLimit(POOLSIZE)
                 .build();
@@ -103,7 +108,7 @@ public class CompositeItemBatchConfig {
 
     @Bean
     @JobScope
-    public Step stepChunkComposite2(@Value("#{jobParameters['todate']}") String todate) {
+    public Step stepChunkComposite2(@Value("#{jobParameters['todate']}") String todate) throws Exception {
 
         log.info("***************todate***********" );
 
@@ -204,32 +209,72 @@ public class CompositeItemBatchConfig {
 //    }
 
     @Bean
-    public CompositeItemWriterDelegate<? super Object> itemWriterDelegate() {
+    public CompositeItemWriterDelegate<? super Object> itemWriterDelegate() throws Exception {
         log.info("=================itemWriterDelegate==================");
         CompositeItemWriterDelegate compositeItemWriter = new CompositeItemWriterDelegate();
-        compositeItemWriter.setDelegates(Arrays.asList(compositeWriterFirst, compositeWriterSecond));
+        compositeItemWriter.setDelegates(Arrays.asList(compositeItemHeaderPriceWriter(null)));
         return compositeItemWriter;
     }
 
     @Bean
-    @StepScope
-    public ItemWriter<? super Object> compositeItemHeaderPriceWriter(@Value("#{jobParameters['todate']}") String todate) {
-        return items -> {
+    public <T> FlatFileItemWriter<? extends T> fileFlatItemWriter() {
+        BeanWrapperFieldExtractor<T> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(new String[] {"seq", "price", "totprice", "rate"});
+        fieldExtractor.afterPropertiesSet();
+        DelimitedLineAggregator<T> lineAggregator = new DelimitedLineAggregator<>();
+        lineAggregator.setDelimiter(",");
+        lineAggregator.setFieldExtractor(fieldExtractor);
 
-            for(Object header : items) {
-                log.info("=================compositeItemHeaderPriceWriter==================");
-                ItemHeader itemHeader = (ItemHeader) header;
-                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
-//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
-            }
+        return new FlatFileItemWriterBuilder<T>()
+                .name("itemWriter")
+                .append(true)
+                .encoding("UTF-8")
+                .resource(new FileSystemResource("/exportSample/exportBatch.txt"))
+                .lineAggregator(lineAggregator)
+                .build();
 
-        };
     }
 
 
     @Bean
     @StepScope
-    public ItemWriter<? super Object> compositeItemDetailPriceWriter(@Value("#{jobParameters['todate']}") String todate) {
+    public FlatFileItemWriter<? super Object> compositeItemHeaderPriceWriter(@Value("#{jobParameters['todate']}") String todate) throws Exception {
+
+        BeanWrapperFieldExtractor<ItemHeader> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(new String[] {"seq", "price", "totprice", "rate"});
+        fieldExtractor.afterPropertiesSet();
+        DelimitedLineAggregator<ItemHeader> lineAggregator = new DelimitedLineAggregator<>();
+        lineAggregator.setDelimiter(",");
+        lineAggregator.setFieldExtractor(fieldExtractor);
+
+        FlatFileItemWriter flatFileItemWriter = new FlatFileItemWriterBuilder<ItemHeader>()
+                .name("itemFileWriter")
+                .append(true)
+                .encoding("UTF-8")
+                .resource(new FileSystemResource("/exportSample/export.txt"))
+                .lineAggregator(lineAggregator)
+                .build();
+
+        flatFileItemWriter.afterPropertiesSet();
+
+        return flatFileItemWriter;
+
+//        return items -> {
+//
+//            for(Object header : items) {
+//                log.info("=================compositeItemHeaderPriceWriter==================");
+//                ItemHeader itemHeader = (ItemHeader) header;
+//                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateHeader", header);
+////                sqlSessionFactory.openSession().update("com.springbatch.service.impl.mapper.TestDBMapper.updateDetail", itemDetail);
+//            }
+//
+//        };
+    }
+
+
+    @Bean
+    @StepScope
+    public <T> ItemWriter<? super T> compositeItemDetailPriceWriter(@Value("#{jobParameters['todate']}") String todate) {
         return items -> {
             final AtomicInteger index = new AtomicInteger();
             log.info("=============start");
